@@ -1,46 +1,83 @@
-# Getting Started with Create React App
+# 돌아보기
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 핵심 개념
 
-## Available Scripts
+- 함수를 합성해서 복잡한 프로그램을 쉽게 만들기
+- 부수효과를 공통적인 방법으로 추상화
 
-In the project directory, you can run:
+## 함수형 프로그래밍의 목적
 
-### `npm start`
+순수함수, 불변성, 참조 투명성, 부분적용과 커링,  
+서술과 실행의 분리, lazy ...
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+> 함수들을 더 안전하고 쉽게 합성하기
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 수 많은 Context들
 
-### `npm test`
+```
+T : 값
+Array<T>: 여러 개이고, 몇 개인지 모르는 값
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+실패의 처리
+Option<T>: 실패해서 결과가 없을 수 있는 값
+Try<T>: 실패해서 예외가 발생한 값
 
-### `npm run build`
+비동기와 반응형
+Promise<T>: 언제 올지 모르는 값
+Obseravle<T>: 여러 번 발생하고, 구독할 수 있는 값
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## map과 flatMap
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+f : A => B
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Functor
+map: (A => B) => (F<A> => F<B>)
 
-### `npm run eject`
+Monad
+flatMap: (A => F<B>) => (<F<A> => F<B>)
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+map : 특정한 맥락이나 구조를 유지하며 합성
+flatMap : 맥락이나 구조가 중첩되어도 합성할 수 있도록 도와줌
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## context마다 정의된 map
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```ts
+double(4) // 8
+  [(1, 2, 3, 4)].map(double); // [2, 4, 6, 8]
+Option.map(oFour, double); // Some<8> | None
+Try.map(tFour, double); // Success<8> | Failed<e>
+promiseFour.then(double); // Promise<8>
+of(1, 2, 3, 4).pipe(map(double)); // Observable<2 4 6 8>
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## functor의 법칙
 
-## Learn More
+```
+functor는 함수 합성을 보존한다.
+f: A => B
+g: B => C
+map(compose(g, f)) === compose(map(g), map(f))
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+functor는 identity를 보존한다.
+id: A => A
+map(id) === id
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 어떻게 합성할 것인가?
+
+- `f: A => Functor<B>`
+- `g: B => Functor<C>`
+
+> `flatMap: (A => B) => Functor<A> => Functor<B>`
+
+## monad 법칙
+
+```
+Left identity: return a >>= f === fa
+Right identity: m >>= return === m
+
+Associativity: (m >>= f) >>= g === m >>= (\x -> fx >>=)
+```
