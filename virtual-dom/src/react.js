@@ -14,6 +14,10 @@ export function createDOM(node) {
   return element;
 }
 
+export function createElement(tag, props, ...children) {
+  return { tag, props, children };
+}
+
 export function render(virtualDom, container) {
   container.appendChild(createDOM(virtualDom));
 }
