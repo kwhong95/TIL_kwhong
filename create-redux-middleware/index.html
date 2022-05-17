@@ -17,6 +17,10 @@
         font-weight: bolder;
       }
 
+      #loading {
+        visibility: hidden;
+      }
+
       button {
         padding: 1em;
         margin-right: 1em;
@@ -30,6 +34,7 @@
       </header>
       <section>
         <p id="counter"></p>
+        <p id="loading">요청중...</p>
         <div>
           <button id="btn-increase">증가</button>
           <button id="btn-async-increase">비동기 증가</button>
