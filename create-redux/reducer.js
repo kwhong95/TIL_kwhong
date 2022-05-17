@@ -10,7 +10,13 @@ export function reducer(state = InitializeState, action) {
     case ActionType.DECREASE:
       return { ...state, count: state.count - 1 };
     case ActionType.RESET:
-      return { ...state, count: 0 };
+      fetch("/reset")
+        .then((res) => res.json())
+        .then((result) => {
+          if (result) {
+            return { ...state, count: 0 };
+          }
+        });
     default:
       return { ...state };
   }

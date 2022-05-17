@@ -32,7 +32,7 @@ function makeProps(props, children) {
   };
 }
 
-function useState(initValue) {
+export function useState(initValue) {
   let position = currentComponent - 1;
 
   if (!hooks[position]) {
