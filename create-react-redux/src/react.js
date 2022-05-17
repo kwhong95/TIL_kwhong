@@ -5,17 +5,19 @@ export class Component {
 }
 
 export function createDOM(node) {
-  if (typeof node === "string") {
+  if (typeof node === "string" || typeof node === "number") {
     return document.createTextNode(node);
   }
 
   const element = document.createElement(node.tag);
 
-  Object.entries(node.props).forEach(([name, value]) =>
-    element.setAttribute(name, value)
-  );
+  node.props &&
+    Object.entries(node.props).forEach(([name, value]) =>
+      element.setAttribute(name, value)
+    );
 
-  node.children.map(createDOM).forEach(element.appendChild.bind(element));
+  node.children &&
+    node.children.map(createDOM).forEach(element.appendChild.bind(element));
 
   return element;
 }
@@ -46,6 +48,16 @@ export function createElement(tag, props, ...children) {
   }
 }
 
-export function render(virtualDom, container) {
-  container.appendChild(createDOM(virtualDom));
-}
+export const render = (function () {
+  let prevDom = null;
+
+  return function (virtualDom, container) {
+    if (prevDom === null) {
+      prevDom = virtualDom;
+    }
+
+    // diff
+
+    container.appendChild(createDOM(virtualDom));
+  };
+})();
